@@ -12,14 +12,23 @@ import { fileURLToPath } from "url";
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
+const baseUrl = (process.env.BASE_URL || `http://localhost:${port}`).replace(/\/$/, "");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const frontendRootDir = path.resolve(__dirname, "../../frontend");
 const frontendDistDir = path.resolve(frontendRootDir, "dist");
 const frontendIndexFile = path.join(frontendDistDir, "index.html");
 
+const getOrigin = (value) => {
+  try {
+    return new URL(value).origin;
+  } catch {
+    return value;
+  }
+};
+
 const allowedOrigins = new Set(
-  [`http://localhost:${port}`, `http://127.0.0.1:${port}`, "http://localhost:5173", "http://127.0.0.1:5173"]
+  [getOrigin(baseUrl), `http://localhost:5173`, `http://127.0.0.1:5173`]
     .concat((process.env.CORS_ORIGINS || "").split(","))
     .map((origin) => origin.trim())
     .filter(Boolean),
@@ -53,5 +62,5 @@ if (fs.existsSync(frontendIndexFile)) {
 }
 
 connectDb().then(() => {
-  app.listen(port, () => console.log(`Server is listening at localhost:${port}`));
+  app.listen(port, () => console.log(`Server is listening at ${baseUrl}`));
 });
