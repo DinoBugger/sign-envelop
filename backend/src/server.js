@@ -1,33 +1,56 @@
+import fs from "fs";
 import mainRouter from "./routers/index.js";
 
 import express from "express";
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDb from "./config/database.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendRootDir = path.resolve(__dirname, "../../frontend");
+const frontendDistDir = path.resolve(frontendRootDir, "dist");
+const frontendIndexFile = path.join(frontendDistDir, "index.html");
 
-app.use(cors());
+const allowedOrigins = new Set(
+  [`http://localhost:${port}`, `http://127.0.0.1:${port}`, "http://localhost:5173", "http://127.0.0.1:5173"]
+    .concat((process.env.CORS_ORIGINS || "").split(","))
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.has(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`Origin ${origin} is not allowed by CORS.`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Type", "Authorization"],
+  maxAge: 86400,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(mainRouter);
-const SECRET_KEY = process.env.JWT_SECRET;
 
-app.get("/api/profile", (req, res) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) return res.status(401).json({ message: "Bạn chưa đăng nhập!" });
-
-  jwt.verify(token, SECRET_KEY, (err, decodedUser) => {
-    if (err) return res.status(403).json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
-
-    res.json({ message: "Chào mừng bạn đến với trang cá nhân!", user: decodedUser });
+if (fs.existsSync(frontendIndexFile)) {
+  app.use(express.static(frontendDistDir));
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(frontendIndexFile);
   });
-});
+}
 
 connectDb().then(() => {
   app.listen(port, () => console.log(`Server is listening at localhost:${port}`));
