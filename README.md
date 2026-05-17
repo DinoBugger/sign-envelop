@@ -69,9 +69,14 @@ ACCESS_TOKEN_SECRET=your-super-secret-key-change-this
 REFRESH_TOKEN_SECRET=your-refresh-token-secret-key-change-this
 PORT=8080
 NODE_ENV=dev
-RESEND_API_KEY=your-resend-api-key
-RESEND_FROM_EMAIL=your-verified-sender-email
-RESEND_FROM_NAME=Node Auth System
+SMTP_SERVICE=gmail
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=your-email@gmail.com
+EMAIL_FROM_NAME=Node Auth System
+CORS_ORIGINS=http://localhost:5173
 ```
 
 Lưu ý:
@@ -110,6 +115,40 @@ EMAIL_PASS=your-app-password
 EMAIL_FROM=your-email@gmail.com
 EMAIL_FROM_NAME=Node Auth System
 ```
+
+### CORS Configuration (Nếu host frontend riêng biệt)
+
+Khi frontend được host trên một domain/URL khác (Vercel, Netlify, v.v.), cần cấu hình CORS để backend chấp nhận request từ frontend.
+
+**Cách cấu hình:**
+
+Thêm biến `CORS_ORIGINS` vào file `.env` backend:
+
+```bash
+# backend/.env
+CORS_ORIGINS=https://your-frontend-domain.com,https://another-frontend.vercel.app
+```
+
+**Ví dụ:**
+
+```bash
+# Một domain
+CORS_ORIGINS=https://sign-envelop.vercel.app
+
+# Nhiều domains (tách bằng dấu phẩy)
+CORS_ORIGINS=https://sign-envelop.vercel.app,https://app.example.com,https://staging.example.com
+
+# Development + Production
+CORS_ORIGINS=http://localhost:5173,https://sign-envelop.vercel.app
+```
+
+**Lưu ý:**
+
+- Các domains được tự động thêm vào danh sách origins cho phép
+- Luôn nhớ **restart backend server** sau khi cập nhật `.env`
+- Default đã hỗ trợ: `http://localhost:5173` (Vite dev) và `http://127.0.0.1:5173`
+- HttpOnly cookie (refresh token) sẽ tự động được gửi cùng request từ browser
+- Ensure frontend API URL được cấu hình đúng (ví dụ: `https://your-backend-api.com/api`)
 
 ### 3. Luồng chạy Development (khuyến nghị)
 
