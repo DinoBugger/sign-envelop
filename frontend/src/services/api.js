@@ -1,10 +1,9 @@
-import "dotenv/config";
+import { getTrimmedEnv } from "../utils/env.js";
 
 const DEFAULT_BASE_URL = "http://localhost:8080";
 
 const getBaseUrl = () => {
-  const envVal = process.env.BACKEND_BASE_URL || DEFAULT_BASE_URL;
-  return envVal.replace(/\/$/, "");
+  return getTrimmedEnv("BACKEND_BASE_URL", DEFAULT_BASE_URL).replace(/\/$/, "");
 };
 
 const getApiBaseUrl = () => {
