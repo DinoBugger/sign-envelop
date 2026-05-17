@@ -3,17 +3,13 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import RefreshToken from "../models/RefreshToken.js";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const ACCESS_AUTH_CONFIG_ERROR = "Server config is missing ACCESS_TOKEN_SECRET. Please set this environment variable.";
-const REFRESH_AUTH_CONFIG_ERROR = "Server config is missing REFRESH_TOKEN_SECRET. Please set this environment variable.";
+import { sendWelcomeEmail } from "../services/mailerService.js";
+import { ACCESS_AUTH_CONFIG_ERROR, REFRESH_AUTH_CONFIG_ERROR, accessTokenSecret, refreshTokenSecret } from "../config/auth.js";
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN = "7d";
 const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // REFRESH TIME TO LIVE
 const REFRESH_COOKIE_NAME = "refreshToken";
-
+const isProduction = "";
 const validateUsername = (username) => {
   if (typeof username !== "string") {
     return "Username must be a string.";
@@ -80,36 +76,15 @@ const validatePassword = (password) => {
 };
 
 const getAccessTokenSecret = () => {
-  const secret = process.env.ACCESS_TOKEN_SECRET;
-
-  if (!secret) {
-    return null;
-  }
-
-  return secret;
+  return accessTokenSecret || null;
 };
 
 const getRefreshTokenSecret = () => {
-  const secret = process.env.REFRESH_TOKEN_SECRET;
-
-  if (!secret) {
-    return null;
-  }
-
-  return secret;
+  return refreshTokenSecret || null;
 };
 
 const hashToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
 
-// This function use to reformat cookie plain store into js Object
-// FROM: "refreshToken=eyJhbGci...; theme=dark; lang=vi"
-/*
-TO: {
-  refreshToken: "eyJhbGci...",
-  theme: "dark",
-  lang: "vi"
-}
- */
 const parseCookieHeader = (cookieHeader = "") => {
   return cookieHeader.split(";").reduce((accumulator, part) => {
     const [rawKey, ...rawValue] = part.trim().split("=");
@@ -128,7 +103,6 @@ const getRefreshTokenFromCookie = (req) => {
 };
 
 const setRefreshTokenCookie = (res, refreshToken) => {
-  const isProduction = process.env.NODE_ENV === "production";
   //cookie(key, value, options)
   res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
     httpOnly: true,
@@ -140,8 +114,6 @@ const setRefreshTokenCookie = (res, refreshToken) => {
 };
 
 const clearRefreshTokenCookie = (res) => {
-  const isProduction = process.env.NODE_ENV === "production";
-
   res.clearCookie(REFRESH_COOKIE_NAME, {
     httpOnly: true,
     secure: isProduction,
@@ -213,6 +185,10 @@ export const register = async (req, res) => {
 
     const newUser = new User({ username: normalizedUsername, email: normalizedEmail, password: hashedPassword });
     await newUser.save();
+
+    void sendWelcomeEmail(newUser).catch((error) => {
+      console.warn("Welcome email failed:", error.message);
+    });
 
     res.status(201).json({ message: "Registration successful!", user: { id: newUser._id, username: newUser.username, email: newUser.email } });
   } catch (error) {
