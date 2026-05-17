@@ -85,7 +85,26 @@ Lưu ý:
 - `RESEND_API_KEY` là bắt buộc để bật tính năng gửi mail qua Resend.
 - `RESEND_FROM_EMAIL` nên là sender đã xác thực trong Resend. Nếu không đặt, hệ thống dùng `onboarding@resend.dev`.
 - `RESEND_FROM_NAME` là tên hiển thị của người gửi.
-- Mặc định `frontend/vite.config.js` đang proxy `/api` sang `http://localhost:8080`.
+
+### 2b. Tạo file `.env` trong `frontend`
+
+```bash
+# frontend/.env
+BACKEND_BASE_URL=http://localhost:8080
+```
+
+Khi host frontend trên platform khác (Vercel, Netlify, v.v.), cập nhật `BACKEND_BASE_URL` thành URL của backend:
+
+```bash
+# Ví dụ: Backend hosted trên Render hoặc Railway
+BACKEND_BASE_URL=https://your-backend-api.com
+```
+
+**Lưu ý:**
+
+- Default (nếu không đặt `.env`): `http://localhost:8080`
+- Frontend sẽ tự động thêm `/api` vào trước các endpoint (ví dụ: `/auth/login` → `{BACKEND_BASE_URL}/api/auth/login`)
+- Mặc định `frontend/vite.config.js` đang proxy `/api` sang `http://localhost:8080` trong development.
 - Nếu bạn muốn backend chạy cổng khác (ví dụ `8000`), hãy đổi `target` trong `frontend/vite.config.js` cho khớp.
 
 ### Resend Mail Service / Email Configuration
