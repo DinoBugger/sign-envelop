@@ -7,6 +7,13 @@ export const registerUser = (payload) => {
   });
 };
 
+export const verifyOTP = (payload) => {
+  return requestJson("/auth/verify-otp", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+};
+
 export const loginUser = (payload) => {
   return requestJson("/auth/login", {
     method: "POST",

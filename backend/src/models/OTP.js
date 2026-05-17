@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const OTPSchema = new mongoose.Schema({
   email: {
@@ -38,4 +38,4 @@ const OTPSchema = new mongoose.Schema({
 // Tạo index compound để tìm kiếm nhanh hơn theo email và loại hành động
 OTPSchema.index({ email: 1, action_type: 1 });
 
-module.exports = mongoose.model("OTP", OTPSchema);
+export default mongoose.model("OTP", OTPSchema);

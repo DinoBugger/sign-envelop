@@ -4,6 +4,7 @@ import AuthLayout from "./layouts/AuthLayout.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import OTPVerifyPage from "./pages/OTPVerifyPage.jsx";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
           <Route index element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify-otp" element={<OTPVerifyPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

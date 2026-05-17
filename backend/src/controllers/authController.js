@@ -3,7 +3,8 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import RefreshToken from "../models/RefreshToken.js";
-import { sendWelcomeEmail } from "../services/mailerService.js";
+import OTP from "../models/OTP.js";
+import { sendWelcomeEmail, sendOtpEmail } from "../services/mailerService.js";
 import { ACCESS_AUTH_CONFIG_ERROR, REFRESH_AUTH_CONFIG_ERROR, accessTokenSecret, refreshTokenSecret } from "../config/auth.js";
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN = "7d";
@@ -148,6 +149,10 @@ const issueTokenPair = async (user, accessSecret, refreshSecret) => {
   return { accessToken, refreshToken };
 };
 
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+};
+
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -180,17 +185,96 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "Email already exists!" });
     }
 
+    // Generate OTP
+    const otpCode = generateOTP();
+
+    // Delete any existing pending OTP for this email
+    await OTP.deleteMany({ email: normalizedEmail, status: "PENDING", action_type: "REGISTER" });
+
+    // Create new OTP record
+    await OTP.create({
+      email: normalizedEmail,
+      otp_code: otpCode,
+      action_type: "REGISTER",
+      status: "PENDING",
+    });
+
+    // Send OTP email
+    await sendOtpEmail({ email: normalizedEmail, otpCode, actionType: "REGISTER" });
+
+    // Return response with info to store in frontend (password will be hashed later)
+    res.status(200).json({
+      message: "OTP sent to your email. Please verify to complete registration.",
+      data: {
+        username: normalizedUsername,
+        email: normalizedEmail,
+        password, // Will be hashed on verification (send it securely)
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error!" });
+  }
+};
+
+export const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp_code, username, password } = req.body;
+
+    if (!email || !otp_code) {
+      return res.status(400).json({ message: "Email and OTP code are required." });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if OTP exists and is valid
+    const otpRecord = await OTP.findOne({
+      email: normalizedEmail,
+      otp_code: otp_code.toString(),
+      action_type: "REGISTER",
+      status: "PENDING",
+    });
+
+    if (!otpRecord) {
+      // Increment attempts count if record exists
+      const existingOTP = await OTP.findOne({ email: normalizedEmail, action_type: "REGISTER" });
+      if (existingOTP) {
+        existingOTP.attempts_count += 1;
+        await existingOTP.save();
+      }
+      return res.status(400).json({ message: "Invalid OTP code." });
+    }
+
+    // Check max attempts
+    if (otpRecord.attempts_count >= 5) {
+      await OTP.deleteOne({ _id: otpRecord._id });
+      return res.status(400).json({ message: "Too many attempts. Please request a new OTP." });
+    }
+
+    // Mark OTP as used
+    otpRecord.status = "USED";
+    await otpRecord.save();
+
+    // Create user account
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({ username: normalizedUsername, email: normalizedEmail, password: hashedPassword });
+    const newUser = new User({
+      username: username.trim(),
+      email: normalizedEmail,
+      password: hashedPassword,
+    });
     await newUser.save();
 
+    // Send welcome email
     void sendWelcomeEmail(newUser).catch((error) => {
       console.warn("Welcome email failed:", error.message);
     });
 
-    res.status(201).json({ message: "Registration successful!", user: { id: newUser._id, username: newUser.username, email: newUser.email } });
+    res.status(201).json({
+      message: "Registration successful!",
+      user: { id: newUser._id, username: newUser.username, email: newUser.email },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error!" });

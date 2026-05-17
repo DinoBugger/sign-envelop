@@ -4,10 +4,11 @@ import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { validateEmail, validatePassword, validateUsername } from "../utils/validators.js";
+import { registerUser } from "../services/authService.js";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { register, setUserMessage } = useAuth();
+  const { setUserMessage } = useAuth();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,15 +35,24 @@ export default function RegisterPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await register({
+      const response = await registerUser({
         username: form.username,
         email: form.email,
         password: form.password,
       });
 
-      // TODO: add OTP email delivery and verification page before account creation is finalized.
-      setUserMessage(response.message || "Registration successful.");
-      navigate("/login", { replace: true });
+      // Store registration data temporarily in localStorage for OTP verification
+      localStorage.setItem(
+        "pendingRegistration",
+        JSON.stringify({
+          username: form.username,
+          email: form.email,
+          password: form.password,
+        }),
+      );
+
+      setUserMessage(response.message || "OTP sent to your email.");
+      navigate("/verify-otp", { replace: true });
     } catch (error) {
       setUserMessage(error.message);
     } finally {
@@ -72,7 +82,7 @@ export default function RegisterPage() {
           autoComplete="new-password"
         />
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Create account"}
+          {isSubmitting ? "Sending OTP..." : "Create account"}
         </Button>
       </form>
     </div>
