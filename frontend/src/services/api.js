@@ -1,7 +1,10 @@
+import "dotenv/config";
+
 const DEFAULT_BASE_URL = "http://localhost:8080";
 
 const getBaseUrl = () => {
-  return (import.meta.env.BACKEND_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, "");
+  const envVal = process.env.BACKEND_BASE_URL || DEFAULT_BASE_URL;
+  return envVal.replace(/\/$/, "");
 };
 
 const getApiBaseUrl = () => {
