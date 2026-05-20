@@ -4,15 +4,15 @@ export const validateUsername = (username) => {
   const normalizedUsername = typeof username === "string" ? username.trim() : "";
 
   if (!normalizedUsername) {
-    return "Username cannot be empty.";
+    return "Tên người dùng không được để trống.";
   }
 
   if (normalizedUsername.length < 3) {
-    return "Username must be at least 3 characters.";
+    return "Tên người dùng phải có ít nhất 3 ký tự.";
   }
 
   if (normalizedUsername.length > 50) {
-    return "Username must not exceed 50 characters.";
+    return "Tên người dùng không được vượt quá 50 ký tự.";
   }
 
   return "";
@@ -22,15 +22,15 @@ export const validateEmail = (email) => {
   const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
   if (!normalizedEmail) {
-    return "Email cannot be empty.";
+    return "Email không được để trống.";
   }
 
   if (!emailPattern.test(normalizedEmail)) {
-    return "Email format is invalid.";
+    return "Định dạng email không hợp lệ.";
   }
 
   if (normalizedEmail.length > 254) {
-    return "Email must not exceed 254 characters.";
+    return "Email không được vượt quá 254 ký tự.";
   }
 
   return "";
@@ -40,15 +40,15 @@ export const validatePassword = (password) => {
   const normalizedPassword = typeof password === "string" ? password : "";
 
   if (!normalizedPassword.trim()) {
-    return "Password cannot be empty.";
+    return "Mật khẩu không được để trống.";
   }
 
   if (normalizedPassword.length < 6) {
-    return "Password must be at least 6 characters.";
+    return "Mật khẩu phải có ít nhất 6 ký tự.";
   }
 
   if (normalizedPassword.length > 128) {
-    return "Password must not exceed 128 characters.";
+    return "Mật khẩu không được vượt quá 128 ký tự.";
   }
 
   return "";

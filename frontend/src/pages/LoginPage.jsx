@@ -7,7 +7,7 @@ import { validateEmail, validatePassword } from "../utils/validators.js";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, setUserMessage } = useAuth();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,10 +38,11 @@ export default function LoginPage() {
         password: form.password,
       });
 
-      setUserMessage(response.message || "Login successful.");
-      navigate("/", { replace: true });
-    } catch (error) {
-      setUserMessage(error.message);
+      if (response) {
+        navigate("/", { replace: true });
+      }
+    } catch {
+      // Toast đã được xử lý ở auth context.
     } finally {
       setIsSubmitting(false);
     }
@@ -50,16 +51,16 @@ export default function LoginPage() {
   return (
     <div className="page-card">
       <div className="page-heading">
-        <p className="page-eyebrow">Welcome back</p>
-        <h2>Login</h2>
-        <p>Use your email address and password to get a fresh access token.</p>
+        <p className="page-eyebrow">Chào mừng trở lại</p>
+        <h2>Đăng nhập</h2>
+        <p>Nhập email và mật khẩu để lấy lại phiên đăng nhập.</p>
       </div>
 
       <form className="form-grid" onSubmit={handleSubmit}>
-        <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" autoComplete="email" />
-        <TextField label="Password" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="••••••••" autoComplete="current-password" />
+        <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="ban@example.com" autoComplete="email" />
+        <TextField label="Mật khẩu" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="••••••••" autoComplete="current-password" />
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
         </Button>
       </form>
     </div>

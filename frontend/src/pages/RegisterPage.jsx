@@ -4,11 +4,10 @@ import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { validateEmail, validatePassword, validateUsername } from "../utils/validators.js";
-import { registerUser } from "../services/authService.js";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { setUserMessage } = useAuth();
+  const { register } = useAuth();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,7 +34,7 @@ export default function RegisterPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await registerUser({
+      const response = await register({
         username: form.username,
         email: form.email,
         password: form.password,
@@ -51,10 +50,11 @@ export default function RegisterPage() {
         }),
       );
 
-      setUserMessage(response.message || "OTP sent to your email.");
-      navigate("/verify-otp", { replace: true });
-    } catch (error) {
-      setUserMessage(error.message);
+      if (response) {
+        navigate("/verify-otp", { replace: true });
+      }
+    } catch {
+      // Toast đã được xử lý ở auth context.
     } finally {
       setIsSubmitting(false);
     }
@@ -63,26 +63,26 @@ export default function RegisterPage() {
   return (
     <div className="page-card">
       <div className="page-heading">
-        <p className="page-eyebrow">Start here</p>
-        <h2>Register</h2>
-        <p>Create an account with username, email, and password.</p>
+        <p className="page-eyebrow">Bắt đầu tại đây</p>
+        <h2>Đăng ký</h2>
+        <p>Tạo tài khoản bằng tên người dùng, email và mật khẩu.</p>
       </div>
 
       <form className="form-grid" onSubmit={handleSubmit}>
-        <TextField label="Username" name="username" value={form.username} onChange={handleChange} error={errors.username} placeholder="dino.bugger" autoComplete="username" />
+        <TextField label="Tên người dùng" name="username" value={form.username} onChange={handleChange} error={errors.username} placeholder="dino.bugger" autoComplete="username" />
         <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" autoComplete="email" />
         <TextField
-          label="Password"
+          label="Mật khẩu"
           name="password"
           type="password"
           value={form.password}
           onChange={handleChange}
           error={errors.password}
-          placeholder="At least 6 characters"
+          placeholder="Ít nhất 6 ký tự"
           autoComplete="new-password"
         />
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Sending OTP..." : "Create account"}
+          {isSubmitting ? "Đang gửi mã OTP..." : "Tạo tài khoản"}
         </Button>
       </form>
     </div>

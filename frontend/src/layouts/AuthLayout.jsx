@@ -1,42 +1,37 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth.js";
 
 export default function AuthLayout() {
-  const { accessToken, isBootstrapping, userMessage } = useAuth();
-
   return (
-    <div className="app-shell">
-      <aside className="app-hero">
-        <p className="app-kicker">Node Auth System</p>
-        <h1>React + Vite auth UI for register and login.</h1>
-        <p className="app-lede">Registration is username + email + password. Login uses email + password, and the backend refresh cookie keeps the session alive.</p>
+    <div className="app-shell auth-shell">
+      <aside className="app-hero auth-hero">
+        <p className="app-kicker">HỆ THỐNG SIGN ENVELOP</p>
+        <h1>Đăng ký hoặc đăng nhập để tiếp tục.</h1>
+        <p className="app-lede">Tạo tài khoản bằng tên người dùng, email và mật khẩu. Sau đó đăng nhập bằng email và mật khẩu để vào trang chính.</p>
 
-        <div className="app-stat-grid">
-          <article className="app-stat-card">
-            <span>Status</span>
-            <strong>{isBootstrapping ? "Bootstrapping" : accessToken ? "Authenticated" : "Anonymous"}</strong>
+        <div className="auth-note-grid">
+          <article className="auth-note-card">
+            <span>Đăng ký</span>
+            <strong>Tên người dùng + Email + Mật khẩu</strong>
           </article>
-          <article className="app-stat-card">
-            <span>Session</span>
-            <strong>{accessToken ? `${accessToken.slice(0, 18)}...` : "No token"}</strong>
+          <article className="auth-note-card">
+            <span>Đăng nhập</span>
+            <strong>Email + Mật khẩu</strong>
           </article>
         </div>
-
-        <p className="app-message">{userMessage}</p>
       </aside>
 
       <main className="app-main">
         <header className="app-nav">
           <nav>
             <NavLink to="/login" className={({ isActive }) => (isActive ? "app-nav__link is-active" : "app-nav__link")}>
-              Login
+              Đăng nhập
             </NavLink>
             <NavLink to="/register" className={({ isActive }) => (isActive ? "app-nav__link is-active" : "app-nav__link")}>
-              Register
+              Đăng ký
             </NavLink>
           </nav>
-          <Link to="/login" className="app-brand">
-            auth-ui
+          <Link to="/" className="app-brand">
+            Trang chủ
           </Link>
         </header>
 
