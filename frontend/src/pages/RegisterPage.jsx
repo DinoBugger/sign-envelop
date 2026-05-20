@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
 import { useAuth } from "../hooks/useAuth.js";
@@ -7,10 +8,17 @@ import { validateEmail, validatePassword, validateUsername } from "../utils/vali
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, accessToken } = useAuth();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (accessToken) {
+      toast.warning("Vui lòng đăng xuất để sử dụng tài khoản khác");
+      navigate("/", { replace: true });
+    }
+  }, [accessToken, navigate]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -65,7 +73,6 @@ export default function RegisterPage() {
       <div className="page-heading">
         <p className="page-eyebrow">Bắt đầu tại đây</p>
         <h2>Đăng ký</h2>
-        <p>Tạo tài khoản bằng tên người dùng, email và mật khẩu.</p>
       </div>
 
       <form className="form-grid" onSubmit={handleSubmit} autoComplete="off">
