@@ -42,7 +42,7 @@ export default function LoginPage() {
         navigate("/", { replace: true });
       }
     } catch {
-      // Toast đã được xử lý ở auth context.
+      // Toasts are handled in the auth context.
     } finally {
       setIsSubmitting(false);
     }
@@ -53,12 +53,12 @@ export default function LoginPage() {
       <div className="page-heading">
         <p className="page-eyebrow">Chào mừng trở lại</p>
         <h2>Đăng nhập</h2>
-        <p>Nhập email và mật khẩu để lấy lại phiên đăng nhập.</p>
+        <p>Sử dụng email và mật khẩu của bạn để lấy mã truy cập mới.</p>
       </div>
 
-      <form className="form-grid" onSubmit={handleSubmit}>
-        <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="ban@example.com" autoComplete="email" />
-        <TextField label="Mật khẩu" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="••••••••" autoComplete="current-password" />
+      <form className="form-grid" onSubmit={handleSubmit} autoComplete="off">
+        <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" autoComplete="off" />
+        <TextField label="Mật khẩu" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="••••••••" autoComplete="off" />
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
         </Button>

@@ -140,7 +140,7 @@ export default function HomePage() {
               </div>
               <span className="status-pill status-pill--success">Hợp lệ</span>
             </div>
-              <p className="document-card__label">Mã băm SHA-256</p>
+            <p className="document-card__label">Mã băm SHA-256</p>
             <p className="document-card__hash">a3f8c2d91e4b7056f...</p>
           </article>
 

@@ -68,19 +68,10 @@ export default function RegisterPage() {
         <p>Tạo tài khoản bằng tên người dùng, email và mật khẩu.</p>
       </div>
 
-      <form className="form-grid" onSubmit={handleSubmit}>
-        <TextField label="Tên người dùng" name="username" value={form.username} onChange={handleChange} error={errors.username} placeholder="dino.bugger" autoComplete="username" />
-        <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" autoComplete="email" />
-        <TextField
-          label="Mật khẩu"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          error={errors.password}
-          placeholder="Ít nhất 6 ký tự"
-          autoComplete="new-password"
-        />
+      <form className="form-grid" onSubmit={handleSubmit} autoComplete="off">
+        <TextField label="Tên người dùng" name="username" value={form.username} onChange={handleChange} error={errors.username} placeholder="dino.bugger" autoComplete="off" />
+        <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" autoComplete="off" />
+        <TextField label="Mật khẩu" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Ít nhất 6 ký tự" autoComplete="off" />
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Đang gửi mã OTP..." : "Tạo tài khoản"}
         </Button>

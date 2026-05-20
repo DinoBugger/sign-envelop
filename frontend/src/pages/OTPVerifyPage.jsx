@@ -108,7 +108,7 @@ export default function OTPVerifyPage() {
         <p>Nhập mã 6 chữ số đã gửi tới {registrationData.email}</p>
       </div>
 
-      <form className="form-grid" onSubmit={handleSubmit}>
+      <form className="form-grid" onSubmit={handleSubmit} autoComplete="off">
         <TextField label="Mã OTP" type="text" value={otpCode} onChange={handleChange} error={error} placeholder="000000" maxLength="6" disabled={timeLeft === 0} />
 
         <div style={{ fontSize: "0.9em", textAlign: "center", color: timeLeft < 30 ? "#e74c3c" : "#666" }}>
@@ -121,7 +121,7 @@ export default function OTPVerifyPage() {
 
         <div style={{ textAlign: "center", marginTop: "1rem" }}>
           <p style={{ fontSize: "0.9em", color: "#666" }}>
-            Chưa nhận được mã? {" "}
+            Chưa nhận được mã?{" "}
             <a href="/register" style={{ color: "#0066cc", textDecoration: "none" }}>
               Quay lại đăng ký
             </a>
