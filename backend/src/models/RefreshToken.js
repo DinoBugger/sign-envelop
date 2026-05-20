@@ -19,7 +19,7 @@ const refreshTokenSchema = new mongoose.Schema(
       index: true,
     },
     tokenHash: {
-      // refresh token before being saved, it is hased into something that prevent db admin or hacker to read it, even when they have access to the database
+      // refresh token before being saved, it is hashed into something that prevent db admin or hacker to read it, even when they have access to the database
       type: String,
       required: true,
       index: true,
