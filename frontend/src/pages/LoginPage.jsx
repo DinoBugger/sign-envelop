@@ -39,7 +39,7 @@ export default function LoginPage() {
       });
 
       setUserMessage(response.message || "Login successful.");
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       setUserMessage(error.message);
     } finally {
