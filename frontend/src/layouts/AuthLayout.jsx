@@ -1,6 +1,9 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
+import { useRedirectIfAuthenticated } from "../hooks/useRedirectIfAuthenticated.js";
 
 export default function AuthLayout() {
+  useRedirectIfAuthenticated();
+
   return (
     <div className="app-shell auth-shell">
       <aside className="app-hero auth-hero">
