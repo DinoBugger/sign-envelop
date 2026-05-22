@@ -43,13 +43,17 @@ const translateAuthErrorMessage = (message) => {
 export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
-  const [userMessage, setUserMessage] = useState("Sẵn sàng đăng nhập hoặc tạo tài khoản.");
   const [isBootstrapping, setIsBootstrapping] = useState(true); // khi đang khởi tạo thì hiển thị màn hình tải
 
   const setSession = (nextToken) => {
     const token = typeof nextToken === "string" ? nextToken : "";
     setAccessToken(token);
     setCurrentUser(decodeTokenPayload(token));
+  };
+
+  const clearSession = () => {
+    setSession("");
+    setCurrentUser(null);
   };
 
   const handleAuthResponse = async (action, payload, successMessage) => {
@@ -62,7 +66,6 @@ export function AuthProvider({ children }) {
       }
 
       if (successMessage) {
-        setUserMessage(successMessage);
         toast.success(successMessage);
       }
 
@@ -85,15 +88,11 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       const response = await logoutUser();
-      setSession("");
-      setCurrentUser(null);
-      setUserMessage("Đăng xuất thành công.");
+      clearSession();
       toast.success("Đăng xuất thành công.");
       return response;
     } catch (error) {
-      setSession("");
-      setCurrentUser(null);
-      setUserMessage("Đăng xuất không thành công.");
+      clearSession();
       toast.error(translateAuthErrorMessage(error.message) || "Đăng xuất không thành công.");
       throw error;
     }
@@ -104,7 +103,6 @@ export function AuthProvider({ children }) {
       const response = await refreshAccessToken();
       if (response?.accessToken) {
         setSession(response.accessToken);
-        setUserMessage("Đã khôi phục phiên đăng nhập.");
         return true;
       }
 
@@ -129,15 +127,13 @@ export function AuthProvider({ children }) {
     () => ({
       accessToken,
       currentUser,
-      userMessage,
       isBootstrapping,
       register,
       login,
       logout,
       restoreSession,
-      setUserMessage,
     }),
-    [accessToken, currentUser, isBootstrapping, userMessage],
+    [accessToken, currentUser, isBootstrapping],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

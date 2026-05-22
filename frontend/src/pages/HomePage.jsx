@@ -76,6 +76,9 @@ export default function HomePage() {
               <span>Xin chào</span>
               <strong>{currentUser.username}</strong>
             </div>
+            <Link className="home-button home-button--ghost" to="/profile">
+              Hồ sơ
+            </Link>
             <button className="home-button home-button--ghost home-user-logout" type="button" onClick={logout}>
               Đăng xuất
             </button>

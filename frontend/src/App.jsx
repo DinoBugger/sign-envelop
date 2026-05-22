@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import OTPVerifyPage from "./pages/OTPVerifyPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
     <AuthProvider>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
