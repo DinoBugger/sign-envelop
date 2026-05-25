@@ -13,6 +13,6 @@ router.get("/active", getActive);
 router.get("/", getAll);
 
 // PATCH /api/v1/keys/:id/revoke
-router.patch(":" + "id/revoke", revoke);
+router.patch("/:id/revoke", revoke);
 
 export default router;

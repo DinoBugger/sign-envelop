@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
@@ -226,7 +226,12 @@ export default function ProfilePage() {
         </div>
 
         <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>Fingerprint khóa công khai</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+            <label style={{ fontWeight: "500" }}>Fingerprint khóa công khai</label>
+            <Link to="/keys" className="app-button app-button--secondary" style={{ textDecoration: "none" }}>
+              Quản lý khóa
+            </Link>
+          </div>
           {profileData.publicKeyFingerprint ? (
             <input
               type="text"

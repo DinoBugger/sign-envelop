@@ -68,6 +68,7 @@ export default function HomePage() {
           <a href="#features">Tính năng</a>
           <a href="#flow">Luồng ký</a>
           <a href="#security">Bảo mật</a>
+          <Link to="/keys">Khóa cá nhân</Link>
         </nav>
 
         {accessToken && currentUser ? (

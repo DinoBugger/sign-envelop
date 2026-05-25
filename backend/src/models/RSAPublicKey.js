@@ -5,7 +5,7 @@ const rsaPublicKeySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
+      // index: true,  // there is more than one userId in this table because of existence of multi keys
     },
     algorithm: {
       type: String,
@@ -30,7 +30,7 @@ const rsaPublicKeySchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      index: true,
+      //index: true,  // unique is enough
       trim: true,
     },
     status: {

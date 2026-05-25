@@ -2,12 +2,12 @@ import crypto from "crypto";
 import RSAPublicKey from "../models/RSAPublicKey.js";
 
 export const generateAndStoreKey = async (userId) => {
-  // Check if any current active public key, if exists revoke it
+  // Prevent generating a second key while another key is still active.
   const existing = await RSAPublicKey.findOne({ userId, status: "active" });
   if (existing) {
-    existing.status = "revoked";
-    existing.revokedAt = new Date();
-    await existing.save();
+    const error = new Error("Active key already exists");
+    error.code = "ACTIVE_KEY_EXISTS";
+    throw error;
   }
 
   // generate sync pair of keys

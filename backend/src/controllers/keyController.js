@@ -9,6 +9,10 @@ export const generateKey = async (req, res) => {
     const { publicKey, privateKey, record } = await keyService.generateAndStoreKey(decoded.id);
     return res.status(201).json({ message: "Key generated", data: { publicKey, privateKey, id: record._id } });
   } catch (err) {
+    if (err?.code === "ACTIVE_KEY_EXISTS") {
+      return res.status(409).json({ message: "Active key already exists. Revoke the current key before generating a new one." });
+    }
+
     console.error(err);
     return res.status(500).json({ message: "Failed to generate key" });
   }
