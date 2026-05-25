@@ -54,6 +54,7 @@ const featureCards = [
 
 export default function HomePage() {
   const { accessToken, currentUser, logout } = useAuth();
+  const isAuthenticated = Boolean(accessToken && currentUser);
 
   return (
     <main className="home-page">
@@ -104,9 +105,11 @@ export default function HomePage() {
           </p>
 
           <div className="home-hero-actions">
-            <Link className="home-button home-button--primary" to="/register">
-              Tạo tài khoản ngay
-            </Link>
+            {!isAuthenticated && (
+              <Link className="home-button home-button--primary" to="/register">
+                Tạo tài khoản ngay
+              </Link>
+            )}
             <a className="home-button home-button--ghost" href="#flow">
               Xem luồng hoạt động
             </a>
@@ -203,22 +206,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="home-section home-section--cta" id="security">
-        <div>
-          <p className="section-kicker">Bảo mật</p>
-          <h2>Bắt đầu ký số ngay hôm nay.</h2>
-          <p>Tạo tài khoản miễn phí, sinh cặp khóa RSA và thử luồng ký tài liệu đầu tiên trong vài phút.</p>
-        </div>
+      {!isAuthenticated && (
+        <section className="home-section home-section--cta" id="security">
+          <div>
+            <p className="section-kicker">Bảo mật</p>
+            <h2>Bắt đầu ký số ngay hôm nay.</h2>
+            <p>Tạo tài khoản miễn phí, sinh cặp khóa RSA và thử luồng ký tài liệu đầu tiên trong vài phút.</p>
+          </div>
 
-        <div className="home-hero-actions">
-          <Link className="home-button home-button--primary" to="/register">
-            Tạo tài khoản miễn phí
-          </Link>
-          <Link className="home-button home-button--ghost" to="/login">
-            Đăng nhập
-          </Link>
-        </div>
-      </section>
+          <div className="home-hero-actions">
+            <Link className="home-button home-button--primary" to="/register">
+              Tạo tài khoản miễn phí
+            </Link>
+            <Link className="home-button home-button--ghost" to="/login">
+              Đăng nhập
+            </Link>
+          </div>
+        </section>
+      )}
 
       <footer className="home-footer">
         <p>© 2026 Sign Envelop · RSA · SHA-256 · PKI</p>
