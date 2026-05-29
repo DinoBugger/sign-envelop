@@ -65,9 +65,9 @@ export default function HomePage() {
         </div>
 
         <nav className="home-nav-links" aria-label="Điều hướng trang chủ">
-          <a href="#features">Tính năng</a>
+          <a href="#sign-document">Kí tài liệu</a>
+          <a href="#verify-signature">Xác thực chữ kí</a>
           <a href="#flow">Luồng ký</a>
-          <a href="#security">Bảo mật</a>
           <Link to="/keys">Khóa cá nhân</Link>
         </nav>
 
@@ -98,75 +98,23 @@ export default function HomePage() {
       </header>
 
       <section className="home-hero">
-        <div className="home-hero-copy">
-          <p className="home-kicker">RSA · SHA-256 · PKI</p>
-          <h1>Ký số tài liệu an toàn, minh bạch và khó bị giả mạo.</h1>
-          <p className="home-lead">
-            Sign Envelop giúp bạn tạo cặp khóa RSA, ký tài liệu và xác thực chữ ký điện tử bằng khóa công khai. Cách trình bày đơn giản, nhưng vẫn giữ đúng ý tưởng bảo mật của bản mẫu.
-          </p>
-
-          <div className="home-hero-actions">
-            {!isAuthenticated && (
-              <Link className="home-button home-button--primary" to="/register">
-                Tạo tài khoản ngay
-              </Link>
-            )}
-            <a className="home-button home-button--ghost" href="#flow">
-              Xem luồng hoạt động
+        <div className="home-hero-panel" aria-label="Hai tính năng chính của hệ thống">
+          <article className="home-feature-panel home-feature-panel--sign" id="sign-document">
+            <p className="home-feature-panel__kicker">Kí tài liệu</p>
+            <h2>Tạo chữ ký số từ khóa riêng</h2>
+            <p>Ký tài liệu nhanh, giữ khóa riêng trên máy và phát hành chữ ký để người khác kiểm tra.</p>
+            <a className="home-button home-button--primary" href="#sign-document">
+              Kí tài liệu ngay
             </a>
-          </div>
-
-          <div className="home-mini-stats" aria-label="Thông tin nhanh">
-            <div>
-              <span>Khóa riêng</span>
-              <strong>Giữ riêng trên máy</strong>
-            </div>
-            <div>
-              <span>Khóa công khai</span>
-              <strong>Dùng để xác thực</strong>
-            </div>
-          </div>
-
-          {accessToken && currentUser ? (
-            <div className="home-user-banner">
-              <img className="home-user-banner__avatar" src={avatarDefault} alt="Avatar mặc định" />
-              <div>
-                <p className="home-user-banner__label">Đã đăng nhập</p>
-                <strong>{currentUser.username}</strong>
-              </div>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="home-hero-panel" aria-label="Minh họa tài liệu ký số">
-          <article className="document-card document-card--valid">
-            <div className="document-card__header">
-              <div>
-                <p className="document-card__title">hop-dong-dich-vu-2024.pdf</p>
-                <p className="document-card__meta">20/05/2026 · 14:32 ICT</p>
-              </div>
-              <span className="status-pill status-pill--success">Hợp lệ</span>
-            </div>
-            <p className="document-card__label">Mã băm SHA-256</p>
-            <p className="document-card__hash">a3f8c2d91e4b7056f...</p>
           </article>
 
-          <article className="signature-card">
-            <p className="signature-card__label">Chữ ký điện tử</p>
-            <h2>Nguyễn Văn An</h2>
-            <p className="signature-card__meta">RSA 4096 bit · ID: 0x7F2A…</p>
-          </article>
-
-          <article className="document-card document-card--pending">
-            <div className="document-card__header">
-              <div>
-                <p className="document-card__title">bao-cao-tai-chinh-q1.docx</p>
-                <p className="document-card__meta">20/05/2026 · 09:15 ICT</p>
-              </div>
-              <span className="status-pill status-pill--warning">Chờ ký</span>
-            </div>
-            <p className="document-card__label">Mã băm SHA-256</p>
-            <p className="document-card__hash">Sẽ được tạo sau khi ký</p>
+          <article className="home-feature-panel home-feature-panel--verify" id="verify-signature">
+            <p className="home-feature-panel__kicker">Xác thực chữ kí</p>
+            <h2>Kiểm tra bằng khóa công khai</h2>
+            <p>Dùng tài liệu và khóa công khai để xác minh tính toàn vẹn, nguồn gốc và phát hiện sửa đổi.</p>
+            <a className="home-button home-button--ghost" href="#verify-signature">
+              Xác thực ngay
+            </a>
           </article>
         </div>
       </section>
@@ -210,9 +158,9 @@ export default function HomePage() {
       {!isAuthenticated && (
         <section className="home-section home-section--cta" id="security">
           <div>
-            <p className="section-kicker">Bảo mật</p>
-            <h2>Bắt đầu ký số ngay hôm nay.</h2>
-            <p>Tạo tài khoản miễn phí, sinh cặp khóa RSA và thử luồng ký tài liệu đầu tiên trong vài phút.</p>
+            <p className="section-kicker">Bắt đầu nhanh</p>
+            <h2>Sẵn sàng thử ký tài liệu và xác thực chữ ký.</h2>
+            <p>Tạo tài khoản miễn phí để dùng ngay hai tính năng chính của hệ thống.</p>
           </div>
 
           <div className="home-hero-actions">
@@ -229,9 +177,9 @@ export default function HomePage() {
       <footer className="home-footer">
         <p>© 2026 Sign Envelop · RSA · SHA-256 · PKI</p>
         <div>
-          <a href="#features">Tính năng</a>
+          <a href="#sign-document">Kí tài liệu</a>
+          <a href="#verify-signature">Xác thực chữ kí</a>
           <a href="#flow">Luồng ký</a>
-          <a href="#security">Bảo mật</a>
         </div>
       </footer>
     </main>

@@ -484,10 +484,10 @@ button {
 
 .home-hero {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 24px;
-  align-items: center;
-  padding: 44px 0 36px;
+  grid-template-columns: 1fr;
+  gap: 0;
+  align-items: stretch;
+  padding: 28px 0 32px;
 }
 
 .home-kicker,
@@ -501,43 +501,16 @@ button {
   color: var(--accent);
 }
 
-.home-hero-copy h1 {
-  margin: 16px 0 14px;
-  font-size: clamp(2.5rem, 5vw, 4.8rem);
-  line-height: 0.98;
-  max-width: 10ch;
-}
-
-.home-lead,
 .section-heading p,
 .feature-card p,
 .step-card p,
 .signature-card__meta,
 .document-card__meta,
 .document-card__hash,
-.home-mini-stats span,
 .home-footer p {
   color: var(--muted);
   line-height: 1.7;
 }
-
-.home-lead {
-  max-width: 60ch;
-  margin: 0;
-}
-
-.home-hero-actions {
-  margin-top: 26px;
-}
-
-.home-mini-stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 22px;
-}
-
-.home-mini-stats > div,
 .document-card,
 .signature-card,
 .step-card,
@@ -548,32 +521,65 @@ button {
   box-shadow: var(--shadow);
 }
 
-.home-mini-stats > div {
-  padding: 16px;
-  border-radius: 18px;
-}
-
-.home-mini-stats strong {
-  display: block;
-  margin-top: 6px;
-}
-
 .home-hero-panel {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .document-card,
 .signature-card,
 .step-card,
 .feature-card,
+.home-feature-panel,
 .home-section--cta {
   border-radius: 20px;
 }
 
 .document-card,
-.signature-card {
+.signature-card,
+.home-feature-panel {
   padding: 18px;
+}
+
+.home-feature-panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  min-height: 100%;
+  border: 1px solid var(--panel-border);
+  background: radial-gradient(circle at top right, rgba(79, 142, 247, 0.12), transparent 28%), var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.home-feature-panel--sign {
+  border-top: 2px solid rgba(74, 222, 128, 0.72);
+}
+
+.home-feature-panel--verify {
+  border-top: 2px solid rgba(103, 232, 249, 0.72);
+}
+
+.home-feature-panel__kicker {
+  margin: 0;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.76rem;
+}
+
+.home-feature-panel h2 {
+  margin: 0;
+  font-family: "DM Serif Display", serif;
+  letter-spacing: -0.04em;
+  font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+  line-height: 1.02;
+}
+
+.home-feature-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 .document-card--valid {
@@ -1031,7 +1037,6 @@ button {
     max-width: none;
   }
 
-  .home-mini-stats,
   .step-grid,
   .feature-grid {
     grid-template-columns: 1fr;
