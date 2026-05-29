@@ -1,19 +1,12 @@
-import fs from "fs";
 import mainRouter from "./routers/index.js";
 
 import express from "express";
 import cors from "cors";
+import morgan from "morgan";
 import connectDb from "./config/database.js";
-import { allowedOrigins, baseUrl, port } from "./config/app.js";
-import path from "path";
-import { fileURLToPath } from "url";
+import { allowedOrigins, baseUrl, isProduction, port } from "./config/app.js";
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const frontendRootDir = path.resolve(__dirname, "../../frontend");
-const frontendDistDir = path.resolve(frontendRootDir, "dist");
-const frontendIndexFile = path.join(frontendDistDir, "index.html");
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -31,16 +24,10 @@ const corsOptions = {
   maxAge: 86400,
 };
 
+app.use(morgan("dev"));
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(mainRouter);
-
-if (fs.existsSync(frontendIndexFile)) {
-  app.use(express.static(frontendDistDir));
-  app.get(/^\/(?!api).*/, (req, res) => {
-    res.sendFile(frontendIndexFile);
-  });
-}
 
 connectDb().then(() => {
   app.listen(port, () => console.log(`Server is listening at ${baseUrl}`));

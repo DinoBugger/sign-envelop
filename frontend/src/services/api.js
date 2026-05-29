@@ -19,13 +19,15 @@ const safeParseJson = async (response) => {
 };
 
 export const requestJson = async (path, options = {}) => {
+  const { headers: optionHeaders, ...requestOptions } = options;
+
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     credentials: "include",
+    ...requestOptions,
     headers: {
       "Content-Type": "application/json",
-      ...(options.headers || {}),
+      ...(optionHeaders || {}),
     },
-    ...options,
   });
 
   const data = await safeParseJson(response);

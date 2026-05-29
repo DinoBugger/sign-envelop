@@ -5,6 +5,7 @@ import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
 import { useAuth } from "../hooks/useAuth.js";
 import { getProfile, updatePassword, updateUsername } from "../services/profileService.js";
+import { logger } from "../utils/logger.js";
 
 const translateError = (message) => {
   const translations = {
@@ -75,7 +76,6 @@ export default function ProfilePage() {
     if (usernameForm === profileData.username) {
       nextErrors.username = "Tên người dùng mới phải khác tên hiện tại.";
     }
-
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
