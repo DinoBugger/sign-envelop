@@ -490,6 +490,35 @@ button {
   padding: 28px 0 32px;
 }
 
+.home-hero-copy {
+  display: grid;
+  gap: 16px;
+  max-width: 72ch;
+}
+
+.home-lede {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 1.02rem;
+}
+
+.home-process-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.home-process-badges span,
+.process-chip {
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
 .home-kicker,
 .section-kicker,
 .document-card__label,
@@ -647,6 +676,10 @@ button {
   padding: 38px 0 0;
 }
 
+.home-section--process {
+  padding-top: 22px;
+}
+
 .section-heading {
   max-width: 760px;
 }
@@ -671,6 +704,13 @@ button {
   margin-top: 22px;
 }
 
+.process-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .step-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -682,6 +722,54 @@ button {
 .step-card,
 .feature-card {
   padding: 18px;
+}
+
+.process-card {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.process-card--sign {
+  border-top: 2px solid rgba(74, 222, 128, 0.72);
+}
+
+.process-card--verify {
+  border-top: 2px solid rgba(103, 232, 249, 0.72);
+}
+
+.process-card__media {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.process-card__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.process-card__content {
+  display: grid;
+  gap: 12px;
+}
+
+.process-card__content h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.process-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .step-card h3,
@@ -972,7 +1060,8 @@ button {
   }
 
   .step-grid,
-  .feature-grid {
+  .feature-grid,
+  .process-grid {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -1038,7 +1127,8 @@ button {
   }
 
   .step-grid,
-  .feature-grid {
+  .feature-grid,
+  .process-grid {
     grid-template-columns: 1fr;
   }
 

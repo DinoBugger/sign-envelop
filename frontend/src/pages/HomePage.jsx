@@ -1,54 +1,27 @@
 import { Link } from "react-router-dom";
 import avatarDefault from "../assets/avatar-default.svg";
+import signStage from "../assets/sign-stage.jpg";
+import verifyStage from "../assets/verify-stage.jpg";
 import { useAuth } from "../hooks/useAuth.js";
 
-const flowSteps = [
+const processStages = [
   {
-    number: "01",
-    title: "Đăng ký và đăng nhập",
-    description: "Tạo tài khoản bằng tên người dùng, email và mật khẩu để bắt đầu sử dụng hệ thống.",
+    id: "sign-document",
+    eyebrow: "Quy trình ký",
+    title: "Ký tài liệu bằng khóa riêng",
+    description: "Băm nội dung bằng SHA-256, sau đó dùng RSA-2048 để tạo chữ ký số gắn với tài liệu.",
+    image: signStage,
+    alt: "Sơ đồ quy trình ký số với bước băm và mã hóa chữ ký",
+    chips: ["Thuật toán hash: Băm SHA-256", "Thuật toán mã hóa: RSA-2048"],
   },
   {
-    number: "02",
-    title: "Tạo cặp khóa RSA",
-    description: "Sinh khóa riêng để giữ trên máy và khóa công khai để phục vụ xác thực.",
-  },
-  {
-    number: "03",
-    title: "Ký tài liệu",
-    description: "Tạo băm SHA-256 cho nội dung rồi gắn chữ ký số vào tài liệu.",
-  },
-  {
-    number: "04",
-    title: "Xác thực chữ ký",
-    description: "Người nhận dùng khóa công khai để kiểm tra tính toàn vẹn và nguồn gốc tài liệu.",
-  },
-];
-
-const featureCards = [
-  {
-    title: "RSA 4096 bit",
-    description: "Khóa riêng không rời khỏi thiết bị của bạn, khóa công khai được dùng để xác thực.",
-  },
-  {
-    title: "Băm SHA-256",
-    description: "Mỗi tài liệu có mã băm riêng, chỉ cần đổi một ký tự là phát hiện được thay đổi.",
-  },
-  {
-    title: "Hồ sơ công khai",
-    description: "Khóa công khai có thể được tra cứu từ hồ sơ để hỗ trợ xác thực tài liệu.",
-  },
-  {
-    title: "Xác thực độc lập",
-    description: "Người nhận tự kiểm tra chữ ký mà không cần phụ thuộc vào bên trung gian.",
-  },
-  {
-    title: "Node.js và MongoDB",
-    description: "Backend lưu trữ khóa và dữ liệu người dùng linh hoạt, dễ mở rộng.",
-  },
-  {
-    title: "Nhiều định dạng tài liệu",
-    description: "Hỗ trợ nhiều loại tài liệu khác nhau theo cùng một quy trình ký số.",
+    id: "verify-signature",
+    eyebrow: "Quy trình xác thực",
+    title: "Xác thực bằng khóa công khai",
+    description: "Giải mã chữ ký bằng RSA-2048, tạo lại hash SHA-256 và so sánh hai giá trị để kiểm tra tính hợp lệ.",
+    image: verifyStage,
+    alt: "Sơ đồ quy trình xác thực chữ ký số với so sánh hai giá trị băm",
+    chips: ["Thuật toán hash: Băm SHA-256", "Thuật toán mã hóa: RSA-2048"],
   },
 ];
 
@@ -67,7 +40,7 @@ export default function HomePage() {
         <nav className="home-nav-links" aria-label="Điều hướng trang chủ">
           <a href="#sign-document">Kí tài liệu</a>
           <a href="#verify-signature">Xác thực chữ kí</a>
-          <a href="#flow">Luồng ký</a>
+          <a href="#process">Quy trình</a>
           <Link to="/keys">Khóa cá nhân</Link>
         </nav>
 
@@ -97,89 +70,78 @@ export default function HomePage() {
         )}
       </header>
 
-      <section className="home-hero">
-        <div className="home-hero-panel" aria-label="Hai tính năng chính của hệ thống">
-          <article className="home-feature-panel home-feature-panel--sign" id="sign-document">
-            <p className="home-feature-panel__kicker">Kí tài liệu</p>
-            <h2>Tạo chữ ký số từ khóa riêng</h2>
-            <p>Ký tài liệu nhanh, giữ khóa riêng trên máy và phát hành chữ ký để người khác kiểm tra.</p>
-            <a className="home-button home-button--primary" href="#sign-document">
-              Kí tài liệu ngay
-            </a>
-          </article>
-
-          <article className="home-feature-panel home-feature-panel--verify" id="verify-signature">
-            <p className="home-feature-panel__kicker">Xác thực chữ kí</p>
-            <h2>Kiểm tra bằng khóa công khai</h2>
-            <p>Dùng tài liệu và khóa công khai để xác minh tính toàn vẹn, nguồn gốc và phát hiện sửa đổi.</p>
-            <a className="home-button home-button--ghost" href="#verify-signature">
-              Xác thực ngay
-            </a>
-          </article>
-        </div>
-      </section>
-
-      <section className="home-section" id="flow">
-        <div className="section-heading">
-          <p className="section-kicker">Luồng hoạt động</p>
-          <h2>Ký tài liệu và xác thực theo từng bước rõ ràng.</h2>
-        </div>
-
-        <div className="step-grid">
-          {flowSteps.map((step) => (
-            <article className="step-card" key={step.number}>
-              <p className="step-card__number">{step.number}</p>
-              <h3>{step.title}</h3>
-              <p>{step.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-section" id="features">
+      <section className="home-section" id="quick-actions">
         <div className="section-heading section-heading--split">
           <div>
-            <p className="section-kicker">Tính năng</p>
-            <h2>Đơn giản để dùng, vẫn giữ tinh thần bảo mật của bản gốc.</h2>
+            <p className="section-kicker">Thao tác nhanh</p>
+            <h2>Hai chức năng chính để đi thẳng vào việc.</h2>
           </div>
-          <p>Nội dung được trình bày gọn hơn file mẫu nhưng vẫn bám các ý chính: ký số, mã băm, khóa công khai, hồ sơ người dùng và xác thực tài liệu.</p>
         </div>
 
-        <div className="feature-grid">
-          {featureCards.map((feature) => (
-            <article className="feature-card" key={feature.title}>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
+        <div className="home-hero-panel" aria-label="Hai chức năng chính của hệ thống">
+          <article className="home-feature-panel home-feature-panel--sign">
+            <p className="home-feature-panel__kicker">Kí tài liệu</p>
+            <h2>Nhập khóa cá nhân và kí tài liệu</h2>
+            <p>Chữ kí được nhúng vào metadata của tài liệu</p>
+            <Link className="home-button home-button--primary" to={isAuthenticated ? "/keys" : "/login"}>
+              {isAuthenticated ? "Kí ngay" : "Đăng nhập để dùng"}
+            </Link>
+          </article>
+
+          <article className="home-feature-panel home-feature-panel--verify">
+            <p className="home-feature-panel__kicker">Xác thực chữ kí</p>
+            <h2>Tải file lên và được kiểm tra chữ kí</h2>
+            <p>Kiểm định chữ kí và nội dung tài liệu không bị thay đổi</p>
+            <Link className="home-button home-button--ghost" to={isAuthenticated ? "/profile" : "/login"}>
+              {isAuthenticated ? "Xác thực ngay" : "Đăng nhập để dùng"}
+            </Link>
+          </article>
+        </div>
+      </section>
+
+      <section className="home-section home-section--process" id="process">
+        <div className="section-heading section-heading--split">
+          <div>
+            <p className="section-kicker">Quy trình chính</p>
+            <h2>Hai ảnh mô tả đầy đủ luồng ký và xác thực.</h2>
+          </div>
+          <div className="home-process-badges" aria-label="Thông tin thuật toán">
+            <span>Thuật toán hash: Băm SHA-256</span>
+            <span>Thuật toán mã hóa: RSA-2048</span>
+          </div>
+        </div>
+
+        <div className="process-grid">
+          {processStages.map((stage) => (
+            <article className={`process-card process-card--${stage.id === "sign-document" ? "sign" : "verify"}`} id={stage.id} key={stage.id}>
+              <div className="process-card__media">
+                <img className="process-card__image" src={stage.image} alt={stage.alt} />
+              </div>
+
+              <div className="process-card__content">
+                <p className="section-kicker">{stage.eyebrow}</p>
+                <h3>{stage.title}</h3>
+                <p>{stage.description}</p>
+
+                <div className="process-card__chips">
+                  {stage.chips.map((chip) => (
+                    <span className="process-chip" key={chip}>
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </article>
           ))}
         </div>
       </section>
 
-      {!isAuthenticated && (
-        <section className="home-section home-section--cta" id="security">
-          <div>
-            <p className="section-kicker">Bắt đầu nhanh</p>
-            <h2>Sẵn sàng thử ký tài liệu và xác thực chữ ký.</h2>
-            <p>Tạo tài khoản miễn phí để dùng ngay hai tính năng chính của hệ thống.</p>
-          </div>
-
-          <div className="home-hero-actions">
-            <Link className="home-button home-button--primary" to="/register">
-              Tạo tài khoản miễn phí
-            </Link>
-            <Link className="home-button home-button--ghost" to="/login">
-              Đăng nhập
-            </Link>
-          </div>
-        </section>
-      )}
-
       <footer className="home-footer">
-        <p>© 2026 Sign Envelop · RSA · SHA-256 · PKI</p>
+        <p>© 2026 Sign Envelop · RSA-2048 · SHA-256 · PKI</p>
         <div>
-          <a href="#sign-document">Kí tài liệu</a>
-          <a href="#verify-signature">Xác thực chữ kí</a>
-          <a href="#flow">Luồng ký</a>
+          <a href="#sign-document">Quy trình ký</a>
+          <a href="#verify-signature">Quy trình xác thực</a>
+          <a href="#process">Tổng quan</a>
         </div>
       </footer>
     </main>
