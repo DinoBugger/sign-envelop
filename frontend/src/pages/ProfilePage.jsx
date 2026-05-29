@@ -38,6 +38,7 @@ export default function ProfilePage() {
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { logout } = useAuth();
 
   useEffect(() => {
     if (!accessToken) {
@@ -168,9 +169,14 @@ export default function ProfilePage() {
               Hồ sơ cá nhân
             </p>
           </div>
-          <Button type="button" variant="secondary" onClick={() => navigate("/")}>
-            Về trang chủ
-          </Button>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Button type="button" onClick={logout}>
+              Đăng xuất
+            </Button>
+            <Button type="button" variant="secondary" onClick={() => navigate("/")}>
+              Về trang chủ
+            </Button>
+          </div>
         </div>
       </div>
 
