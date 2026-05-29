@@ -1,0 +1,21 @@
+{
+  "name": "auth-system",
+  "version": "1.0.0",
+  "description": "Hệ thống xác thực cơ bản viết bằng Node.js + Express + MongoDB với frontend React + Vite để test nhanh.",
+  "main": "index.js",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-dinobugger:DinoBugger/sign-envelop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^10.0.0"
+  }
+}
