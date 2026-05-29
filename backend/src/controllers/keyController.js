@@ -6,11 +6,23 @@ export const generateKey = async (req, res) => {
   if (!decoded) return;
 
   try {
-    const { publicKey, privateKey, record } = await keyService.generateAndStoreKey(decoded.id);
-    return res.status(201).json({ message: "Key generated", data: { publicKey, privateKey, id: record._id } });
+    const { publicKey, encryptedPrivateKeyBase64, privateKeyFileName, record } = await keyService.generateAndStoreKey(decoded.id, req.body?.pin);
+    return res.status(201).json({
+      message: "Key generated",
+      data: {
+        publicKey,
+        encryptedPrivateKeyBase64,
+        privateKeyFileName,
+        id: record._id,
+      },
+    });
   } catch (err) {
     if (err?.code === "ACTIVE_KEY_EXISTS") {
       return res.status(409).json({ message: "Active key already exists. Revoke the current key before generating a new one." });
+    }
+
+    if (err?.code === "INVALID_PIN_CODE") {
+      return res.status(400).json({ message: "PIN code must be exactly 6 digits" });
     }
 
     console.error(err);

@@ -1005,6 +1005,10 @@ button {
   padding: 20px;
 }
 
+.key-modal__panel--compact {
+  width: min(460px, 100%);
+}
+
 .key-modal__header {
   align-items: center;
 }

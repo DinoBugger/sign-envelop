@@ -10,10 +10,11 @@ export const getMyKeys = (accessToken) => {
   });
 };
 
-export const generateMyKeyPair = (accessToken) => {
+export const generateMyKeyPair = (accessToken, pin) => {
   return requestJson("/v1/keys/generate", {
     method: "POST",
     headers: authHeaders(accessToken),
+    body: JSON.stringify({ pin }),
   });
 };
 

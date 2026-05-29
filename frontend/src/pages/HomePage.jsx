@@ -105,10 +105,6 @@ export default function HomePage() {
             <p className="section-kicker">Quy trình chính</p>
             <h2>Hai ảnh mô tả đầy đủ luồng ký và xác thực.</h2>
           </div>
-          <div className="home-process-badges" aria-label="Thông tin thuật toán">
-            <span>Thuật toán hash: Băm SHA-256</span>
-            <span>Thuật toán mã hóa: RSA-2048</span>
-          </div>
         </div>
 
         <div className="process-grid">
