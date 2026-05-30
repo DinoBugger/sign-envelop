@@ -53,3 +53,20 @@ export const validatePassword = (password) => {
 
   return "";
 };
+
+export const validateProvince = (province, provinceOptions = []) => {
+  const normalizedProvince = typeof province === "string" ? province.trim() : "";
+
+  if (!normalizedProvince) {
+    return "";
+  }
+
+  if (provinceOptions.length > 0) {
+    const isKnownProvince = provinceOptions.some((option) => option.name === normalizedProvince);
+    if (!isKnownProvince) {
+      return "Vui lòng chọn một tỉnh / thành phố trong danh sách gợi ý.";
+    }
+  }
+
+  return "";
+};

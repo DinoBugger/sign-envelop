@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import RSAPublicKey from "../models/RSAPublicKey.js";
 import { resolveAuthenticatedUser } from "../utils/auth.js";
+import { isKnownProvince } from "../constants/provinces.js";
 
 const validateUsername = (username) => {
   if (typeof username !== "string") {
@@ -45,6 +46,28 @@ const validatePassword = (password) => {
   return null;
 };
 
+const validateProvince = (province) => {
+  if (province === undefined || province === null || province === "") {
+    return null;
+  }
+
+  if (typeof province !== "string") {
+    return "Province must be a string.";
+  }
+
+  const normalizedProvince = province.trim();
+
+  if (!normalizedProvince) {
+    return null;
+  }
+
+  if (!isKnownProvince(normalizedProvince)) {
+    return "Province is not a recognized province.";
+  }
+
+  return null;
+};
+
 export const getProfile = async (req, res) => {
   try {
     const decodedUser = resolveAuthenticatedUser(req, res);
@@ -65,6 +88,7 @@ export const getProfile = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        province: user.province,
         publicKeyFingerprint: activeKey?.fingerprint || null,
       },
     });
@@ -110,6 +134,7 @@ export const updateUsername = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        province: user.province,
       },
     });
   } catch (error) {
@@ -160,6 +185,45 @@ export const updatePassword = async (req, res) => {
     await user.save();
 
     return res.json({ message: "Password updated successfully!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error!" });
+  }
+};
+
+export const updateProvince = async (req, res) => {
+  try {
+    const decodedUser = resolveAuthenticatedUser(req, res);
+    if (!decodedUser) {
+      return;
+    }
+
+    const { province } = req.body;
+
+    const provinceError = validateProvince(province);
+    if (provinceError) {
+      return res.status(400).json({ message: provinceError });
+    }
+
+    const normalizedProvince = typeof province === "string" ? province.trim() : "";
+
+    const user = await User.findById(decodedUser.id);
+    if (!user) {
+      return res.status(404).json({ message: "User does not exist." });
+    }
+
+    user.province = normalizedProvince || undefined;
+    await user.save();
+
+    return res.json({
+      message: "Province updated successfully!",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        province: user.province,
+      },
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error!" });

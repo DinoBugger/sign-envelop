@@ -6,6 +6,7 @@ import RefreshToken from "../models/RefreshToken.js";
 import OTP from "../models/OTP.js";
 import { sendWelcomeEmail, sendOtpEmail } from "../services/mailerService.js";
 import { ACCESS_AUTH_CONFIG_ERROR, REFRESH_AUTH_CONFIG_ERROR, accessTokenSecret, refreshTokenSecret } from "../config/auth.js";
+import { isKnownProvince } from "../constants/provinces.js";
 const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN = "7d";
 const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // REFRESH TIME TO LIVE
@@ -76,6 +77,28 @@ const validatePassword = (password) => {
   return null;
 };
 
+const validateProvince = (province) => {
+  if (province === undefined || province === null || province === "") {
+    return null;
+  }
+
+  if (typeof province !== "string") {
+    return "Province must be a string.";
+  }
+
+  const normalizedProvince = province.trim();
+
+  if (!normalizedProvince) {
+    return null;
+  }
+
+  if (!isKnownProvince(normalizedProvince)) {
+    return "Province is not a recognized province.";
+  }
+
+  return null;
+};
+
 const getAccessTokenSecret = () => {
   return accessTokenSecret || null;
 };
@@ -126,7 +149,7 @@ const clearRefreshTokenCookie = (res) => {
 // sign parameters: (Payload, Secret, Options)
 
 const signAccessToken = (user, accessSecret) => {
-  return jwt.sign({ id: user._id, username: user.username, email: user.email }, accessSecret, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+  return jwt.sign({ id: user._id, username: user.username, email: user.email, province: user.province }, accessSecret, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
 };
 
 const signRefreshToken = (user, refreshSecret, jti) => {
@@ -155,7 +178,7 @@ const generateOTP = () => {
 
 export const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, province } = req.body;
 
     const usernameError = validateUsername(username);
     if (usernameError) {
@@ -172,8 +195,14 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: passwordError });
     }
 
+    const provinceError = validateProvince(province);
+    if (provinceError) {
+      return res.status(400).json({ message: provinceError });
+    }
+
     const normalizedUsername = username.trim();
     const normalizedEmail = email.trim().toLowerCase();
+    const normalizedProvince = typeof province === "string" ? province.trim() : "";
 
     const userExists = await User.findOne({ username: normalizedUsername });
     if (userExists) {
@@ -208,6 +237,7 @@ export const register = async (req, res) => {
       data: {
         username: normalizedUsername,
         email: normalizedEmail,
+        province: normalizedProvince || undefined,
         password, // Will be hashed on verification (send it securely)
       },
     });
@@ -219,7 +249,7 @@ export const register = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
   try {
-    const { email, otp_code, username, password } = req.body;
+    const { email, otp_code, username, password, province } = req.body;
 
     if (!email || !otp_code) {
       return res.status(400).json({ message: "Email and OTP code are required." });
@@ -251,6 +281,13 @@ export const verifyOTP = async (req, res) => {
       return res.status(400).json({ message: "Too many attempts. Please request a new OTP." });
     }
 
+    const provinceError = validateProvince(province);
+    if (provinceError) {
+      return res.status(400).json({ message: provinceError });
+    }
+
+    const normalizedProvince = typeof province === "string" ? province.trim() : "";
+
     // Mark OTP as used
     otpRecord.status = "USED";
     await otpRecord.save();
@@ -262,6 +299,7 @@ export const verifyOTP = async (req, res) => {
     const newUser = new User({
       username: username.trim(),
       email: normalizedEmail,
+      province: normalizedProvince || undefined,
       password: hashedPassword,
     });
     await newUser.save();
@@ -273,7 +311,7 @@ export const verifyOTP = async (req, res) => {
 
     res.status(201).json({
       message: "Registration successful!",
-      user: { id: newUser._id, username: newUser.username, email: newUser.email },
+      user: { id: newUser._id, username: newUser.username, email: newUser.email, province: newUser.province },
     });
   } catch (error) {
     console.error(error);

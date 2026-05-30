@@ -73,6 +73,7 @@ export default function OTPVerifyPage() {
         otp_code: otpCode,
         username: registrationData.username,
         password: registrationData.password,
+        province: registrationData.province,
       });
 
       // Clear pending registration data

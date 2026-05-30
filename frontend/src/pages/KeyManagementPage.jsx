@@ -232,6 +232,10 @@ export default function KeyManagementPage() {
           <strong>{currentUser?.username || "-"}</strong>
         </div>
         <div className="key-summary-card">
+          <span>Tỉnh / thành phố</span>
+          <strong>{currentUser?.province || "-"}</strong>
+        </div>
+        <div className="key-summary-card">
           <span>Trạng thái hiện tại</span>
           <strong>{activeKey ? "Có khóa active" : "Không có khóa active"}</strong>
         </div>

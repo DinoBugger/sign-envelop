@@ -83,7 +83,7 @@ export default function HomePage() {
             <p className="home-feature-panel__kicker">Kí tài liệu</p>
             <h2>Nhập khóa cá nhân và kí tài liệu</h2>
             <p>Chữ kí được nhúng vào metadata của tài liệu</p>
-            <Link className="home-button home-button--primary" to={isAuthenticated ? "/keys" : "/login"}>
+            <Link className="home-button home-button--primary" to={isAuthenticated ? "/sign" : "/login"}>
               {isAuthenticated ? "Kí ngay" : "Đăng nhập để dùng"}
             </Link>
           </article>

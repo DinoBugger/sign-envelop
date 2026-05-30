@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
 import { useAuth } from "../hooks/useAuth.js";
-import { validateEmail, validatePassword, validateUsername } from "../utils/validators.js";
+import { useProvinces } from "../hooks/useProvinces.js";
+import { validateEmail, validatePassword, validateProvince, validateUsername } from "../utils/validators.js";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { register } = useAuth();
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const { provinces, isLoading: isLoadingProvinces } = useProvinces();
+  const [form, setForm] = useState({ username: "", email: "", password: "", province: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -24,6 +26,7 @@ export default function RegisterPage() {
       username: validateUsername(form.username),
       email: validateEmail(form.email),
       password: validatePassword(form.password),
+      province: validateProvince(form.province, provinces),
     };
 
     setErrors(nextErrors);
@@ -38,6 +41,7 @@ export default function RegisterPage() {
         username: form.username,
         email: form.email,
         password: form.password,
+        province: form.province,
       });
 
       // Store registration data temporarily in localStorage for OTP verification
@@ -47,6 +51,7 @@ export default function RegisterPage() {
           username: form.username,
           email: form.email,
           password: form.password,
+          province: form.province,
         }),
       );
 
@@ -70,6 +75,21 @@ export default function RegisterPage() {
       <form className="form-grid" onSubmit={handleSubmit} autoComplete="off">
         <TextField label="Tên người dùng" name="username" value={form.username} onChange={handleChange} error={errors.username} placeholder="dino.bugger" autoComplete="off" />
         <TextField label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" autoComplete="off" />
+        <TextField
+          label="Tỉnh / thành phố"
+          name="province"
+          value={form.province}
+          onChange={handleChange}
+          error={errors.province}
+          placeholder={isLoadingProvinces ? "Đang tải danh sách..." : "Gõ để tìm tỉnh / thành phố"}
+          autoComplete="address-level1"
+          list="province-options"
+        />
+        <datalist id="province-options">
+          {provinces.map((province) => (
+            <option key={province.id ?? province.name} value={province.name} />
+          ))}
+        </datalist>
         <TextField label="Mật khẩu" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Ít nhất 6 ký tự" autoComplete="off" />
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Đang gửi mã OTP..." : "Tạo tài khoản"}

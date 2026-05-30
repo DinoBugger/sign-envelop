@@ -15,7 +15,7 @@
   --warning: #fcd34d;
   --danger: #fb7185;
   --shadow: 0 28px 100px rgba(0, 0, 0, 0.45);
-  font-family: "Outfit", system-ui, sans-serif;
+  font-family: "Inter", "Roboto", "Arial", sans-serif;
 }
 
 * {

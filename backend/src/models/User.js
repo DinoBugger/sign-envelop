@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    province: {
+      type: String,
+      trim: true,
+    },
     password: {
       type: String,
       required: true,

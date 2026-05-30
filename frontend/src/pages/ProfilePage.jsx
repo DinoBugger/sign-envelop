@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
 import { useAuth } from "../hooks/useAuth.js";
-import { getProfile, updatePassword, updateUsername } from "../services/profileService.js";
+import { useProvinces } from "../hooks/useProvinces.js";
+import { getProfile, updatePassword, updateProvince, updateUsername } from "../services/profileService.js";
 import { logger } from "../utils/logger.js";
 
 const translateError = (message) => {
@@ -18,6 +19,10 @@ const translateError = (message) => {
     "Password must be at least 6 characters.": "Mật khẩu phải có ít nhất 6 ký tự.",
     "Password must not exceed 128 characters.": "Mật khẩu không được vượt quá 128 ký tự.",
     "Current password and new password are required.": "Vui lòng nhập mật khẩu hiện tại và mật khẩu mới.",
+    "Province cannot be empty.": "Tỉnh / thành phố không được để trống.",
+    "Province must be a string.": "Tỉnh / thành phố không hợp lệ.",
+    "Province is not a recognized province.": "Tỉnh / thành phố không có trong danh sách.",
+    "Province updated successfully!": "Cập nhật tỉnh / thành phố thành công!",
     "User does not exist.": "Tài khoản không tồn tại.",
     "Server error!": "Đã xảy ra lỗi máy chủ.",
     "Username updated successfully!": "Cập nhật tên người dùng thành công!",
@@ -30,11 +35,14 @@ const translateError = (message) => {
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { accessToken } = useAuth();
+  const { provinces } = useProvinces();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editingUsername, setEditingUsername] = useState(false);
+  const [editingProvince, setEditingProvince] = useState(false);
   const [editingPassword, setEditingPassword] = useState(false);
   const [usernameForm, setUsernameForm] = useState("");
+  const [provinceForm, setProvinceForm] = useState("");
   const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,6 +62,7 @@ export default function ProfilePage() {
       const data = await getProfile(accessToken);
       setProfileData(data.user);
       setUsernameForm(data.user.username);
+      setProvinceForm(data.user.province || "");
     } catch (error) {
       toast.error("Không thể tải thông tin hồ sơ.");
       console.error(error);
@@ -93,6 +102,32 @@ export default function ProfilePage() {
     } catch (error) {
       const errorMsg = translateError(error.message);
       setErrors({ username: errorMsg });
+      toast.error(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateProvince = async (e) => {
+    e.preventDefault();
+    const nextErrors = {};
+
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const data = await updateProvince(accessToken, provinceForm);
+
+      setProfileData(data.user);
+      setEditingProvince(false);
+      toast.success(translateError(data.message));
+    } catch (error) {
+      const errorMsg = translateError(error.message);
+      setErrors({ province: errorMsg });
       toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
@@ -195,18 +230,64 @@ export default function ProfilePage() {
           <p style={{ fontSize: "0.85rem", color: "#999", marginTop: "0.25rem" }}>Email của bạn không thể thay đổi.</p>
         </div>
 
-        {/* Username */}
         <div style={{ marginBottom: "1.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-            <label style={{ fontWeight: "500" }}>Tên người dùng</label>
-            {!editingUsername && (
-              <button type="button" onClick={() => setEditingUsername(true)} style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>Tỉnh / thành phố</label>
+          {!editingProvince ? (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ flex: 1, padding: "0.75rem", backgroundColor: "#f5f5f5", borderRadius: "4px", color: "#333" }}>{profileData.province || "-"}</div>
+              <button
+                type="button"
+                onClick={() => setEditingProvince(true)}
+                style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap" }}
+              >
                 Chỉnh sửa
               </button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <form onSubmit={handleUpdateProvince} style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+              <TextField
+                name="province"
+                value={provinceForm}
+                onChange={(e) => {
+                  setProvinceForm(e.target.value);
+                  setErrors({ ...errors, province: "" });
+                }}
+                error={errors.province}
+                placeholder="Gõ để tìm tỉnh / thành phố"
+                list="province-options"
+                autoComplete="address-level1"
+              />
+              <datalist id="province-options">
+                {provinces.map((province) => (
+                  <option key={province.id ?? province.name} value={province.name} />
+                ))}
+              </datalist>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Đang lưu..." : "Lưu"}
+                </Button>
+                <Button type="button" variant="secondary" onClick={() => setEditingProvince(false)} disabled={isSubmitting}>
+                  Hủy
+                </Button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* Username */}
+        <div style={{ marginBottom: "1.5rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>Tên người dùng</label>
           {!editingUsername ? (
-            <div style={{ padding: "0.75rem", backgroundColor: "#f5f5f5", borderRadius: "4px", color: "#333" }}>{profileData.username}</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ flex: 1, padding: "0.75rem", backgroundColor: "#f5f5f5", borderRadius: "4px", color: "#333" }}>{profileData.username}</div>
+              <button
+                type="button"
+                onClick={() => setEditingUsername(true)}
+                style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap" }}
+              >
+                Chỉnh sửa
+              </button>
+            </div>
           ) : (
             <form onSubmit={handleUpdateUsername} style={{ display: "flex", gap: "0.5rem" }}>
               <TextField
@@ -232,31 +313,37 @@ export default function ProfilePage() {
         </div>
 
         <div style={{ marginBottom: "1.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-            <label style={{ fontWeight: "500" }}>Fingerprint khóa công khai</label>
-            <Link to="/keys" className="app-button app-button--secondary" style={{ textDecoration: "none" }}>
-              Quản lý khóa
-            </Link>
-          </div>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>Fingerprint khóa công khai</label>
           {profileData.publicKeyFingerprint ? (
-            <input
-              type="text"
-              value={profileData.publicKeyFingerprint}
-              disabled
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                backgroundColor: "#f5f5f5",
-                color: "#666",
-                fontFamily: "monospace",
-                fontSize: "0.9rem",
-                wordBreak: "break-all",
-              }}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <input
+                type="text"
+                value={profileData.publicKeyFingerprint}
+                disabled
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  padding: "0.75rem",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  backgroundColor: "#f5f5f5",
+                  color: "#666",
+                  fontFamily: "monospace",
+                  fontSize: "0.9rem",
+                  wordBreak: "break-all",
+                }}
+              />
+              <Link to="/keys" style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap", textDecoration: "none" }}>
+                Quản lý khóa
+              </Link>
+            </div>
           ) : (
-            <div style={{ padding: "0.75rem", backgroundColor: "#f5f5f5", borderRadius: "4px", color: "#999" }}>Chưa tạo khóa công khai</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ flex: 1, minWidth: 0, padding: "0.75rem", backgroundColor: "#f5f5f5", borderRadius: "4px", color: "#999" }}>Chưa tạo khóa công khai</div>
+              <Link to="/keys" style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap", textDecoration: "none" }}>
+                Quản lý khóa
+              </Link>
+            </div>
           )}
         </div>
       </div>

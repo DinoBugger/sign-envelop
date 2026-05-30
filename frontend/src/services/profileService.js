@@ -18,6 +18,14 @@ export const updateUsername = (accessToken, username) => {
   });
 };
 
+export const updateProvince = (accessToken, province) => {
+  return requestJson("/profile/province", {
+    method: "PUT",
+    headers: authHeaders(accessToken),
+    body: JSON.stringify({ province }),
+  });
+};
+
 export const updatePassword = (accessToken, currentPassword, newPassword) => {
   return requestJson("/profile/password", {
     method: "PUT",
