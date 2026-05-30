@@ -313,12 +313,12 @@ export default function ProfilePage() {
         </div>
 
         <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>Fingerprint khóa công khai</label>
-          {profileData.publicKeyFingerprint ? (
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500" }}>Serial number</label>
+          {profileData.serialNumber ? (
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <input
                 type="text"
-                value={profileData.publicKeyFingerprint}
+                value={profileData.serialNumber}
                 disabled
                 style={{
                   flex: 1,
@@ -333,15 +333,15 @@ export default function ProfilePage() {
                   wordBreak: "break-all",
                 }}
               />
-              <Link to="/keys" style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap", textDecoration: "none" }}>
-                Quản lý khóa
+              <Link to="/certificates" style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap", textDecoration: "none" }}>
+                Quản lý chứng thư
               </Link>
             </div>
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ flex: 1, minWidth: 0, padding: "0.75rem", backgroundColor: "#f5f5f5", borderRadius: "4px", color: "#999" }}>Chưa tạo khóa công khai</div>
-              <Link to="/keys" style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap", textDecoration: "none" }}>
-                Quản lý khóa
+              <div style={{ flex: 1, minWidth: 0, padding: "0.75rem", backgroundColor: "#f5f5f5", borderRadius: "4px", color: "#999" }}>Chưa có serial number</div>
+              <Link to="/certificates" style={{ color: "#0066cc", background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", whiteSpace: "nowrap", textDecoration: "none" }}>
+                Quản lý chứng thư
               </Link>
             </div>
           )}

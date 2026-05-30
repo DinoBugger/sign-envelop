@@ -41,7 +41,7 @@ export default function HomePage() {
           <a href="#sign-document">Kí tài liệu</a>
           <a href="#verify-signature">Xác thực chữ kí</a>
           <a href="#process">Quy trình</a>
-          <Link to="/keys">Khóa cá nhân</Link>
+          <Link to="/certificates">Chứng thư</Link>
         </nav>
 
         {accessToken && currentUser ? (

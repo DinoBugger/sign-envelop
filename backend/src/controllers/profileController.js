@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
-import RSAPublicKey from "../models/RSAPublicKey.js";
 import { resolveAuthenticatedUser } from "../utils/auth.js";
 import { isKnownProvince } from "../constants/provinces.js";
 
@@ -80,8 +79,6 @@ export const getProfile = async (req, res) => {
       return res.status(404).json({ message: "User does not exist." });
     }
 
-    const activeKey = await RSAPublicKey.findOne({ userId: user._id, status: "active" });
-
     return res.json({
       message: "Welcome to your profile page!",
       user: {
@@ -89,7 +86,7 @@ export const getProfile = async (req, res) => {
         username: user.username,
         email: user.email,
         province: user.province,
-        publicKeyFingerprint: activeKey?.fingerprint || null,
+        serialNumber: user.serial_number || null,
       },
     });
   } catch (error) {
