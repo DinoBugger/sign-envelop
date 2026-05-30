@@ -212,10 +212,7 @@ export default function CertificateManagementPage() {
           <span>Người dùng</span>
           <strong>{currentUser?.username || "-"}</strong>
         </div>
-        <div className="key-summary-card">
-          <span>Tỉnh / thành phố</span>
-          <strong>{currentUser?.province || "-"}</strong>
-        </div>
+
         <div className="key-summary-card">
           <span>Trạng thái hiện tại</span>
           <strong>{activeCertificate ? "Có chứng thư active" : "Không có chứng thư active"}</strong>
