@@ -176,6 +176,10 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
 };
 
+const hashCertificateSerial = (email) => {
+  return crypto.createHash("sha256").update(email).digest("hex");
+};
+
 export const register = async (req, res) => {
   try {
     const { username, email, password, province } = req.body;
@@ -203,6 +207,7 @@ export const register = async (req, res) => {
     const normalizedUsername = username.trim();
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedProvince = typeof province === "string" ? province.trim() : "";
+    const certificateSerial = hashCertificateSerial(normalizedEmail);
 
     const userExists = await User.findOne({ username: normalizedUsername });
     if (userExists) {
@@ -238,6 +243,7 @@ export const register = async (req, res) => {
         username: normalizedUsername,
         email: normalizedEmail,
         province: normalizedProvince || undefined,
+        certificate_serial: certificateSerial,
         password, // Will be hashed on verification (send it securely)
       },
     });
@@ -287,6 +293,7 @@ export const verifyOTP = async (req, res) => {
     }
 
     const normalizedProvince = typeof province === "string" ? province.trim() : "";
+    const certificateSerial = hashCertificateSerial(normalizedEmail);
 
     // Mark OTP as used
     otpRecord.status = "USED";
@@ -299,6 +306,7 @@ export const verifyOTP = async (req, res) => {
     const newUser = new User({
       username: username.trim(),
       email: normalizedEmail,
+      certificate_serial: certificateSerial,
       province: normalizedProvince || undefined,
       password: hashedPassword,
     });
@@ -311,7 +319,13 @@ export const verifyOTP = async (req, res) => {
 
     res.status(201).json({
       message: "Registration successful!",
-      user: { id: newUser._id, username: newUser.username, email: newUser.email, province: newUser.province },
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        certificate_serial: newUser.certificate_serial,
+        province: newUser.province,
+      },
     });
   } catch (error) {
     console.error(error);

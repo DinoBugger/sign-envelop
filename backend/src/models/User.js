@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    certificate_serial: {
+      type: String,
+      trim: true,
+    },
     province: {
       type: String,
       trim: true,
