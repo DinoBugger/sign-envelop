@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    certificate_serial: {
+    serial_number: {
       type: String,
       trim: true,
     },

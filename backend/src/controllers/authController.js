@@ -176,8 +176,31 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
 };
 
-const hashCertificateSerial = (email) => {
-  return crypto.createHash("sha256").update(email).digest("hex");
+const CRC32_TABLE = (() => {
+  const table = new Uint32Array(256);
+
+  for (let index = 0; index < 256; index += 1) {
+    let crc = index;
+
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc & 1) !== 0 ? (crc >>> 1) ^ 0xedb88320 : crc >>> 1;
+    }
+
+    table[index] = crc >>> 0;
+  }
+
+  return table;
+})();
+
+const hashSerialNumber = (email) => {
+  let crc = 0xffffffff;
+
+  for (let index = 0; index < email.length; index += 1) {
+    const byte = email.charCodeAt(index) & 0xff;
+    crc = (crc >>> 8) ^ CRC32_TABLE[(crc ^ byte) & 0xff];
+  }
+
+  return ((crc ^ 0xffffffff) >>> 0).toString(16).padStart(8, "0");
 };
 
 export const register = async (req, res) => {
@@ -207,7 +230,7 @@ export const register = async (req, res) => {
     const normalizedUsername = username.trim();
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedProvince = typeof province === "string" ? province.trim() : "";
-    const certificateSerial = hashCertificateSerial(normalizedEmail);
+    const serialNumber = hashSerialNumber(normalizedEmail);
 
     const userExists = await User.findOne({ username: normalizedUsername });
     if (userExists) {
@@ -243,7 +266,7 @@ export const register = async (req, res) => {
         username: normalizedUsername,
         email: normalizedEmail,
         province: normalizedProvince || undefined,
-        certificate_serial: certificateSerial,
+        serial_number: serialNumber,
         password, // Will be hashed on verification (send it securely)
       },
     });
@@ -293,7 +316,7 @@ export const verifyOTP = async (req, res) => {
     }
 
     const normalizedProvince = typeof province === "string" ? province.trim() : "";
-    const certificateSerial = hashCertificateSerial(normalizedEmail);
+    const serialNumber = hashSerialNumber(normalizedEmail);
 
     // Mark OTP as used
     otpRecord.status = "USED";
@@ -306,7 +329,7 @@ export const verifyOTP = async (req, res) => {
     const newUser = new User({
       username: username.trim(),
       email: normalizedEmail,
-      certificate_serial: certificateSerial,
+      serial_number: serialNumber,
       province: normalizedProvince || undefined,
       password: hashedPassword,
     });
@@ -323,7 +346,7 @@ export const verifyOTP = async (req, res) => {
         id: newUser._id,
         username: newUser.username,
         email: newUser.email,
-        certificate_serial: newUser.certificate_serial,
+        serial_number: newUser.serial_number,
         province: newUser.province,
       },
     });
