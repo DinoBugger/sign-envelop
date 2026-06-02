@@ -1,14 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Button from "../components/Button.jsx";
 import TextField from "../components/TextField.jsx";
+import { useAuth } from "../hooks/useAuth.js";
+import { getMyCertificates } from "../services/certificateService.js";
 
 const PIN_LENGTH = 6;
 
 export default function SignPage() {
   const navigate = useNavigate();
+  const { accessToken } = useAuth();
   const [form, setForm] = useState({ documentFile: null, privateKeyFile: null, pin: "" });
   const [fileErrors, setFileErrors] = useState({ documentFile: "", privateKeyFile: "" });
+  const [isCheckingCertificate, setIsCheckingCertificate] = useState(true);
 
   const pinError = useMemo(() => {
     if (!form.pin) {
@@ -57,6 +62,63 @@ export default function SignPage() {
     event.preventDefault();
     if (fileErrors.documentFile || fileErrors.privateKeyFile || pinError) return;
   };
+
+  useEffect(() => {
+    if (!accessToken) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    let isMounted = true;
+
+    const checkActiveCertificate = async () => {
+      try {
+        const response = await getMyCertificates(accessToken);
+        const certificates = Array.isArray(response.data) ? response.data : [];
+        const hasActiveCertificate = certificates.some((certificate) => certificate.status === "active");
+
+        if (!hasActiveCertificate) {
+          toast.warning("Bạn cần có chứng thư còn hiệu lực trước khi ký tài liệu. Hãy tạo hoặc kích hoạt chứng thư trong mục Chứng thư.", {
+            toastId: "sign-page-active-certificate-required",
+          });
+          navigate("/certificates", { replace: true });
+          return;
+        }
+
+        if (isMounted) {
+          setIsCheckingCertificate(false);
+        }
+      } catch (error) {
+        if (error?.message === "You are not logged in!" || error?.message === "Token is invalid or expired!") {
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        toast.error(error.message || "Không thể kiểm tra chứng thư active.");
+        navigate("/certificates", { replace: true });
+      }
+    };
+
+    checkActiveCertificate();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [accessToken, navigate]);
+
+  if (isCheckingCertificate) {
+    return (
+      <main className="page-shell">
+        <section className="page-card sign-page">
+          <div className="page-heading">
+            <p className="page-eyebrow">Ký tài liệu</p>
+            <h2>Đang kiểm tra chứng thư active...</h2>
+            <p>Hệ thống đang xác nhận bạn có chứng thư hợp lệ để tiếp tục ký tài liệu.</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell">

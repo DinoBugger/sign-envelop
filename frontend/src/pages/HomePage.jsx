@@ -38,7 +38,7 @@ export default function HomePage() {
         </div>
 
         <nav className="home-nav-links" aria-label="Điều hướng trang chủ">
-          <a href="#sign-document">Kí tài liệu</a>
+          <Link to={isAuthenticated ? "/sign" : "/login"}>Kí tài liệu</Link>
           <a href="#verify-signature">Xác thực chữ kí</a>
           <a href="#process">Quy trình</a>
           <Link to="/certificates">Chứng thư</Link>
