@@ -1,6 +1,6 @@
 import { resolveAuthenticatedUser } from "../utils/auth.js";
 import * as certificateService from "../services/certificateService.js";
-import { decryptPrivateKeyBin, getUploadedFileNameFromRequest, prepareSignedPdfBuffer, validateSignRequestData } from "../services/signService.js";
+import { decryptPrivateKeyBin, getUploadedFileNameFromRequest, prepareSignedPdfBuffer, validatePrivateKeyMatchesCertificate, validateSignRequestData } from "../services/signService.js";
 
 const isClientInputError = (error) => {
   return [
@@ -10,6 +10,8 @@ const isClientInputError = (error) => {
     "INVALID_PRIVATE_KEY_BLOB",
     "UNSUPPORTED_PRIVATE_KEY_BLOB_VERSION",
     "INVALID_PRIVATE_KEY_PEM",
+    "INVALID_ACTIVE_CERTIFICATE",
+    "PRIVATE_KEY_CERTIFICATE_MISMATCH",
     "INVALID_PDF_HASH",
     "INVALID_PDF_FILE",
   ].includes(error?.code);
@@ -28,6 +30,8 @@ export const signPdfDocument = async (req, res) => {
     }
 
     const privateKeyPem = decryptPrivateKeyBin({ binFile, pinCode });
+    validatePrivateKeyMatchesCertificate({ privateKeyPem, certificate });
+
     const { signedPdfBuffer, hashHex, signatureBase64, certificateAttachmentName, sourceFileName } = await prepareSignedPdfBuffer({
       pdfFile,
       privateKeyPem,

@@ -69,6 +69,19 @@ const resolveFileBuffer = (fileLike) => {
   return null;
 };
 
+const normalizePem = (value) => {
+  return typeof value === "string" ? value.trim().replace(/\r\n/g, "\n") : "";
+};
+
+const buildPublicKeyFingerprint = (publicKeyPem) => {
+  const normalizedPublicKeyPem = normalizePem(publicKeyPem);
+  if (!normalizedPublicKeyPem) {
+    return "";
+  }
+
+  return crypto.createHash("sha256").update(normalizedPublicKeyPem).digest("hex");
+};
+
 export const validateSignRequestData = ({ files, body } = {}) => {
   const pdfFile = getSingleUploadedFile(files?.documentFile) || getSingleUploadedFile(files?.pdf);
   if (!pdfFile) {
@@ -120,6 +133,41 @@ export const encryptHashToDigitalSignature = ({ hashHex, privateKeyPem } = {}) =
     },
     Buffer.from(normalizedHash, "hex"),
   );
+};
+
+export const validatePrivateKeyMatchesCertificate = ({ privateKeyPem, certificate } = {}) => {
+  if (typeof privateKeyPem !== "string" || !privateKeyPem.includes("BEGIN PRIVATE KEY")) {
+    throw createSignError("Private key PEM không hợp lệ.", "INVALID_PRIVATE_KEY_PEM");
+  }
+
+  const certificateFingerprint = typeof certificate?.fingerprint === "string" ? certificate.fingerprint.trim().toLowerCase() : "";
+  const certificatePublicKeyPem = normalizePem(certificate?.publicKey);
+
+  if (!certificateFingerprint && !certificatePublicKeyPem) {
+    throw createSignError("Chứng thư active không hợp lệ.", "INVALID_ACTIVE_CERTIFICATE");
+  }
+
+  let derivedPublicKeyPem;
+  try {
+    derivedPublicKeyPem = crypto.createPublicKey(privateKeyPem).export({ type: "spki", format: "pem" }).toString("utf8");
+  } catch {
+    throw createSignError("Private key PEM không hợp lệ.", "INVALID_PRIVATE_KEY_PEM");
+  }
+
+  const derivedFingerprint = buildPublicKeyFingerprint(derivedPublicKeyPem);
+  const certificatePublicKeyFingerprint = buildPublicKeyFingerprint(certificatePublicKeyPem);
+
+  const fingerprintMatches = certificateFingerprint && derivedFingerprint === certificateFingerprint;
+  const pemMatches = certificatePublicKeyPem && normalizePem(derivedPublicKeyPem) === certificatePublicKeyPem;
+
+  if (!fingerprintMatches || !pemMatches || (certificatePublicKeyFingerprint && certificatePublicKeyFingerprint !== certificateFingerprint)) {
+    throw createSignError("Private key không khớp với public key của chứng thư active.", "PRIVATE_KEY_CERTIFICATE_MISMATCH");
+  }
+
+  return {
+    derivedPublicKeyPem: normalizePem(derivedPublicKeyPem),
+    derivedPublicKeyFingerprint: derivedFingerprint,
+  };
 };
 
 export const decryptPrivateKeyBin = ({ binFile, pinCode } = {}) => {
