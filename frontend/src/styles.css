@@ -286,6 +286,12 @@ button {
   padding: 8px;
 }
 
+.page-shell {
+  width: min(760px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 44px;
+}
+
 .page-heading {
   padding: 18px 18px 8px;
 }
@@ -348,6 +354,60 @@ button {
 
 .field__error {
   color: var(--danger);
+}
+
+.field--file .field__input {
+  padding: 12px 14px;
+}
+
+.field--file .field__input::file-selector-button {
+  margin-right: 14px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #06101a;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.field--file .field__input::-webkit-file-upload-button {
+  margin-right: 14px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #06101a;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sign-page {
+  overflow: hidden;
+}
+
+.sign-page__summary {
+  display: grid;
+  gap: 10px;
+  padding: 0 18px;
+  color: var(--muted);
+}
+
+.sign-page__summary p {
+  margin: 0;
+  word-break: break-word;
+}
+
+.sign-page__summary strong {
+  color: var(--text);
+}
+
+.sign-page__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px 18px;
+  flex-wrap: wrap;
 }
 
 .app-button {

@@ -11,6 +11,7 @@ import OTPVerifyPage from "./pages/OTPVerifyPage.jsx";
 import CertificateDetailPage from "./pages/CertificateDetailPage.jsx";
 import CertificateManagementPage from "./pages/CertificateManagementPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import SignPage from "./pages/SignPage.jsx";
 import "react-toastify/dist/ReactToastify.css";
 
 function AppRoutes() {
@@ -34,6 +35,7 @@ function AppRoutes() {
       <Route path="/certificates" element={<CertificateManagementPage />} />
       <Route path="/certificates/:certificateId" element={<CertificateDetailPage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/sign" element={<SignPage />} />
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
